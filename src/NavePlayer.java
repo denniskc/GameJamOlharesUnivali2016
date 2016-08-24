@@ -74,12 +74,12 @@ public class NavePlayer extends Sprite {
 		        GamePanel.instance.SomTiro.ParaSom();
 		        GamePanel.instance.SomTiro.TocaSom();
 		        
-	            Sprite Tiro = new Sprite( GamePanel.instance.Tiros[1],xmundo+(int)X+(Largura/2)-10,ymundo+(int)Y-20,0,true,20,40,4,1);		    
+	            Sprite Tiro = new Sprite( GamePanel.instance.Tiros[0],xmundo+(int)X+(Largura/2)-10-10,ymundo+(int)Y-20,0,true,20,40,4,1);		    
 	            Tiro.VelX = 0;
 	            Tiro.VelY = -800;		    
 	            GamePanel.instance.ListaTiros.add(Tiro);
 	            
-	            Sprite Tiro2 = new Sprite( GamePanel.instance.Tiros[1],xmundo+(int)X+(Largura/2)+10,ymundo+(int)Y-20,0,true,20,40,4,1);		    
+	            Sprite Tiro2 = new Sprite( GamePanel.instance.Tiros[2],xmundo+(int)X+(Largura/2)+10-10,ymundo+(int)Y-20,0,true,20,40,4,1);		    
 	            Tiro2.VelX = 0;
 	            Tiro2.VelY = -800;		    
 	            GamePanel.instance.ListaTiros.add(Tiro2);

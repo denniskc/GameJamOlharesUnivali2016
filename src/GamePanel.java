@@ -135,11 +135,12 @@ public GamePanel()
 	    Inimigos[7] = carregaImagem("/inimigos/inimigo8.png"); 
 	
 	
-	Tiros = new BufferedImage[3];	
+	Tiros = new BufferedImage[4];	
 
-	    Tiros[0] = carregaImagem("ataque04.png");
-	    Tiros[1] = carregaImagem("ataque02.png");
-	    Tiros[2] = carregaImagem("ataque03.png");
+	    Tiros[0] = carregaImagem("/tiros/TiroAlien.png");
+	    Tiros[1] = carregaImagem("/tiros/TiroHumano.png");
+	    Tiros[2] = carregaImagem("/tiros/TiroTank.png");
+	    Tiros[3] = carregaImagem("/tiros/TiroSteampunk.png");
 	    	
 	
 	Explosoes = new BufferedImage[4]; 
@@ -156,14 +157,14 @@ public GamePanel()
 	    ExplosoesSize[3] = Explosoes[3].getHeight();
 
 	    Nave = carregaImagem("/naves/nave1.png");
-	    Fundo = carregaImagem("fundo.jpg");
+	    Fundo = carregaImagem("/backgrounds/BACKGROUND_Karth.jpg");
 		
 
-	    BufferedImage tmp = carregaImagem("spaceship.png");
+	    BufferedImage tmp = carregaImagem("/mapas/TilesetTeste.png");
 	    BufferedImage tileset = new BufferedImage(tmp.getWidth(null), tmp.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 	    tileset.getGraphics().drawImage(tmp, 0, 0, null);
 	    MAPA = new TileMapJSON(tileset, 20, 19);
-	    MAPA.AbreMapa("mapaNave.json");
+	    MAPA.AbreMapa("/mapas/mapa1.json");
 
 	
 	Personagem = new NavePlayer(Nave,20,20,0,false,Nave.getWidth(null),Nave.getHeight(null),1,1);
@@ -353,8 +354,8 @@ private void gameUpdate(long DiffTime)
 	
 
 	
-	PosWorldY += -((20*DiffTime)/1000.0f);
-	desloc += ((20*DiffTime)/1000.0f);
+	PosWorldY += -((50*DiffTime)/1000.0f);
+	desloc += ((50*DiffTime)/1000.0f);
 	
 	int mapy = ((MAPA.Altura*MAPA.tileH)-19*MAPA.tileH)+((int)(PosWorldY));
 	MAPA.Posiciona(0, mapy);
@@ -491,7 +492,7 @@ private void gameRender()
 	//MAPA.DesenhaSe(dbg);
 			// draw game elements
 	int x = (int)(PosWorldX/2);
-	int y = (int)(PosWorldY/2)+3000;
+	int y = (int)(PosWorldY/2)+4200;
 	dbg.drawImage(Fundo,-x,-y,null);
 	//System.out.println(" x "+x+" y "+y+" "+ListaParticulas.size());
 	
