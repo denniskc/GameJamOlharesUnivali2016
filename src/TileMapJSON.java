@@ -124,27 +124,33 @@ public class TileMapJSON {
 		}
 		for (int j = 0; j < NTileY + somay; j++) {
 			for (int i = 0; i < NTileX + somax; i++) {
-
-				int tilex = (mapa[j + (MapY /tileH)][i + (MapX /tileH)] % TilePLinhaTileset) * tileW;
-				int tiley = (mapa[j + (MapY /tileH)][i + (MapX /tileH)] / TilePLinhaTileset) * tileH;
-				int id = i *  tileW;
-				int jd = j *  tileH;
-				dbg.drawImage(TileSet, id - offx, jd - offy,id + tileW - offx, jd + tileH - offy, tilex,tiley, tilex + tileW, tiley + tileH, null);
+				int tile = mapa[j + (MapY /tileH)][i + (MapX /tileH)];
+				
+				if(tile!=0){
+					int tilex = (tile % TilePLinhaTileset) * tileW;
+					int tiley = (tile / TilePLinhaTileset) * tileH;
+					int id = i *  tileW;
+					int jd = j *  tileH;
+					dbg.drawImage(TileSet, id - offx, jd - offy,id + tileW - offx, jd + tileH - offy, tilex,tiley, tilex + tileW, tiley + tileH, null);
+				}
 			}
 		}
-		for (int j = 0; j < NTileY + somay; j++) {
-			for (int i = 0; i < NTileX + somax; i++) {
-
-				int tilex = (mapa2[j + (MapY /tileH)][i + (MapX /tileH)] % TilePLinhaTileset) * tileW;
-				int tiley = (mapa2[j + (MapY /tileH)][i + (MapX /tileH)] / TilePLinhaTileset) * tileH;
-				int id = i *  tileW;
-				int jd = j *  tileH;
-				dbg.drawImage(TileSet, id - offx, jd - offy,id + tileW - offx, jd + tileH - offy, tilex,tiley, tilex + tileW, tiley + tileH, null);
-			}
-		}
+//		for (int j = 0; j < NTileY + somay; j++) {
+//			for (int i = 0; i < NTileX + somax; i++) {
+//
+//				int tilex = (mapa2[j + (MapY /tileH)][i + (MapX /tileH)] % TilePLinhaTileset) * tileW;
+//				int tiley = (mapa2[j + (MapY /tileH)][i + (MapX /tileH)] / TilePLinhaTileset) * tileH;
+//				int id = i *  tileW;
+//				int jd = j *  tileH;
+//				dbg.drawImage(TileSet, id - offx, jd - offy,id + tileW - offx, jd + tileH - offy, tilex,tiley, tilex + tileW, tiley + tileH, null);
+//			}
+//		}
 	}
 
-	public void Posiciona(int x, int y) {
+	public void Posiciona(int x, int y) {	
+		
+		System.out.println(" "+tileH+" "+y);
+		
 		int X = x / tileW;
 		int Y = y / tileH;
 

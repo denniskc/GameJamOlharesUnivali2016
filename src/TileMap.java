@@ -22,8 +22,7 @@ public class TileMap {
     int POSMAPX;
     
     int [][]mapa;
-            		          		
-            		
+   		
     public TileMap(Image tileset,int temtelaX,int tamtelaY){
         TamTelaX = temtelaX;
         TamTelaY = tamtelaY;        
@@ -45,9 +44,7 @@ public class TileMap {
             for(int i = 0; i < 40;i++){
                 mapa[j][i] = GamePanel.rnd.nextInt(10);
             }            
-        } 
-        
-        
+        }    
     }
         
     public void DesenhaSe(Graphics2D dbg){

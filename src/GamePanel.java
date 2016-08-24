@@ -50,7 +50,7 @@ public BufferedImage Fundo;
 
 
 NavePlayer Personagem;
-TileMap MAPA;
+TileMapJSON MAPA;
 
 Font FonteJogo = new Font(null,Font.BOLD,24);
 
@@ -78,9 +78,10 @@ public static Random rnd =  new Random();
 Canvas gui = null;
 public BufferStrategy strategy = null;
 
-float PosMapX;
-float PosMapY;
+float PosWorldX;
+float PosWorldY;
 float desloc;
+
 
 
 public GamePanel()
@@ -150,10 +151,11 @@ public GamePanel()
 	    Fundo = carregaImagem("fundo.jpg");
 		
 
-	    BufferedImage tmp = carregaImagem("TileSetFundo.png");
+	    BufferedImage tmp = carregaImagem("spaceship.png");
 	    BufferedImage tileset = new BufferedImage(tmp.getWidth(null), tmp.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 	    tileset.getGraphics().drawImage(tmp, 0, 0, null);
-	    MAPA = new TileMap(tileset,640,480); 	    
+	    MAPA = new TileMapJSON(tileset, 20, 20);
+	    MAPA.AbreMapa("mapaNave.json");
 
 	
 	Personagem = new NavePlayer(Nave,20,20,0,false,Nave.getWidth(null),Nave.getHeight(null),1,1);
@@ -171,7 +173,7 @@ public GamePanel()
 	
 	desloc = 0;	
 		
-	PosMapY = 0;
+	PosWorldY = 0;
 	
 	SomFundo = new Som("Crisis.mid");
 	SomTiro = new Som("Attack2.wav");
@@ -333,40 +335,40 @@ private void gameUpdate(long DiffTime)
 	
 
 	
-	PosMapY += -((200*DiffTime)/1000.0f);
-	desloc += ((200*DiffTime)/1000.0f);
-
+	PosWorldY += -((20*DiffTime)/1000.0f);
+	desloc += ((20*DiffTime)/1000.0f);
 	
-	if(desloc>(100+(1000/Difficult))){// Adiciona mais inimigos depois de um tempo
-
-		Sprite UmInimigo;	
-		for(int i = 0; i < 3;i++){
-		    int inimigoescolhido = rnd.nextInt(3);
-		    UmInimigo = new Sprite(Inimigos[inimigoescolhido],rnd.nextInt(540),-100,0,false,Inimigos[inimigoescolhido].getWidth(null),Inimigos[inimigoescolhido].getHeight(null),1,1);
-		    UmInimigo.VelX = -50 + rnd.nextInt(100);
-		    UmInimigo.VelY = 50+rnd.nextInt(50*Difficult);
-		    UmInimigo.Anim = rnd.nextInt(4);
-		    UmInimigo.Life = 20 + rnd.nextInt(20*Difficult);
-		    
-		    ListaObjetos.add(UmInimigo);	    
+	int mapy = ((MAPA.Altura*MAPA.tileH)-20*MAPA.tileH)+((int)(PosWorldY));
+	MAPA.Posiciona(0, mapy);
+	
+	
+	if(desloc >= 96){
+		int postile = (MAPA.MapY/32)-2;
+		if(postile>4){
+			for(int py = postile; py > (postile - 3);py--){
+				for(int px = 0; px < 20;px++){
+					int t = MAPA.mapa2[py][px];
+					//System.out.println(" "+px+" "+py+" "+t);
+					if(t >0){
+					    int inimigoescolhido = rnd.nextInt(3);
+					    Sprite UmInimigo = new Sprite(Inimigos[inimigoescolhido],px*32-50,py*32-50,0,false,Inimigos[inimigoescolhido].getWidth(null),Inimigos[inimigoescolhido].getHeight(null),1,1);
+					    UmInimigo.VelX = 0;//-50 + rnd.nextInt(100);
+					    UmInimigo.VelY = 100;//50+rnd.nextInt(50*Difficult);
+					    UmInimigo.Anim = rnd.nextInt(4);
+					    UmInimigo.Life = 20 + rnd.nextInt(20*Difficult);
+					    
+					    ListaObjetos.add(UmInimigo);	
+					}
+				}
+			}
 		}
 		
-		desloc = 0;
+		desloc = desloc-96;
 		
 		for(int i = 0; i < 200;i++){
-			ListaParticulas.add(new Particula(rnd.nextInt(PWIDTH), (int)PosMapY-rnd.nextInt(1000),0,rnd.nextInt(500)));
+			ListaParticulas.add(new Particula(rnd.nextInt(PWIDTH), (int)PosWorldY-rnd.nextInt(1000),0,rnd.nextInt(500)));
 		}
-		
 	}	
-
-		
-		
-		//Personagem.X = x;
-		//Personagem.Y = y;
-				
-	
-
-	
 	// Simula Lista de Tiros
 	for(int i  = 0; i < ListaTiros.size();i++){
 	    if(((Sprite)ListaTiros.get(i)).Y < -60){
@@ -386,12 +388,12 @@ private void gameUpdate(long DiffTime)
 	
 	// Simula Lista de Objetos
 	for(int i  = 0; i < ListaObjetos.size();i++){
-	    if(((Sprite)ListaObjetos.get(i)).Y > 650){
-	        ListaObjetos.remove(i);
-	        i--;
-	    }else{
+//	    if(((Sprite)ListaObjetos.get(i)).Y > 650){
+//	        ListaObjetos.remove(i);
+//	        i--;
+//	    }else{
 	        ((Sprite)ListaObjetos.get(i)).SimulaSe(DiffTime);
-	    }
+	   // }
 	}
 	
 	for(int i  = 0; i < ListaExplosoes.size();i++){
@@ -410,6 +412,7 @@ private void gameUpdate(long DiffTime)
 	    Sprite otiro = ((Sprite)ListaTiros.get(i));
 	    int xtiro = (int)((Sprite)ListaTiros.get(i)).X;
 	    int ytiro = (int)((Sprite)ListaTiros.get(i)).Y;
+	    //System.out.println(" xtiro "+xtiro+" ytiro "+ytiro);
 	    
 		for(int j  = 0; j < ListaObjetos.size();j++){
 		    Sprite enemy = ((Sprite)ListaObjetos.get(j)); 
@@ -447,7 +450,7 @@ private void gameUpdate(long DiffTime)
 	
 	// Simula Lista de Particulas
 	for(int i  = 0; i < ListaParticulas.size();i++){
-	    if(((Particula)ListaParticulas.get(i)).y > (PosMapY+680)){
+	    if(((Particula)ListaParticulas.get(i)).y > (PosWorldY+680)){
 	    	ListaParticulas.remove(i);
 	        i--;
 	    }else{
@@ -467,10 +470,12 @@ private void gameRender()
 	//dbg.fillRect (0, 0, PWIDTH, PHEIGHT);
 	//MAPA.DesenhaSe(dbg);
 			// draw game elements
-	int x = (int)(PosMapX/50);
-	int y = (int)(PosMapY/50)+3000;
+	int x = (int)(PosWorldX/2);
+	int y = (int)(PosWorldY/2)+3000;
 	dbg.drawImage(Fundo,-x,-y,null);
 	//System.out.println(" x "+x+" y "+y+" "+ListaParticulas.size());
+	
+	MAPA.DesenhaSe(dbg);
 		
 	if(Vidas>=0){
 		dbg.setColor(Color.WHITE);	
@@ -488,18 +493,18 @@ private void gameRender()
 		}
 		
 		for(int i  = 0; i < ListaObjetos.size();i++){
-		    ((Sprite)ListaObjetos.get(i)).DesenhaSe(dbg);
+		    ((Sprite)ListaObjetos.get(i)).DesenhaSe(dbg,MAPA.MapX,MAPA.MapY);
 		}
 		for(int i  = 0; i < ListaTiros.size();i++){
-		    ((Sprite)ListaTiros.get(i)).DesenhaSe(dbg);
+		    ((Sprite)ListaTiros.get(i)).DesenhaSe(dbg,MAPA.MapX,MAPA.MapY);
 		}	
 		
 		for(int i  = 0; i < ListaExplosoes.size();i++){
-		    ((Sprite)ListaExplosoes.get(i)).DesenhaSe(dbg);
+		    ((Sprite)ListaExplosoes.get(i)).DesenhaSe(dbg,MAPA.MapX,MAPA.MapY);
 		}
 		
 		for(int i  = 0; i < ListaParticulas.size();i++){
-		    ((Particula)ListaParticulas.get(i)).DesenhaSe(dbg,(int)PosMapX,(int)PosMapY);
+		    ((Particula)ListaParticulas.get(i)).DesenhaSe(dbg,(int)PosWorldX,(int)PosWorldY);
 		}
 	}else{
 		dbg.setColor(Color.WHITE);	
