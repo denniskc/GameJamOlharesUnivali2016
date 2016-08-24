@@ -10,10 +10,10 @@ import java.awt.image.BufferedImage;
 
 public class Sprite extends Objeto{
     
-    public Image Charset = null;
+    public BufferedImage Charset = null;
     
     float X,Y;
-    int VelX,VelY;
+    float VelX,VelY;
     int FrameTime;
     long Tempo;
     int Anim;
@@ -28,7 +28,7 @@ public class Sprite extends Objeto{
     
     int Life = 100;
     
-    public Sprite(Image charset,int x,int y,int charac,boolean emcharset,int largura,int altura,int nframes,int nanimations){
+    public Sprite(BufferedImage charset,int x,int y,int charac,boolean emcharset,int largura,int altura,int nframes,int nanimations){
         X = x;
         Y = y;
         

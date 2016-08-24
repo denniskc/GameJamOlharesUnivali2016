@@ -45,9 +45,10 @@ public BufferedImage Nave;
 public BufferedImage Inimigos[];
 public BufferedImage Tiros[];
 public BufferedImage Explosoes[];
+public int ExplosoesSize[];
 public BufferedImage Fundo;
 
-
+ArrayList<GamePath> listaDePaths = new ArrayList<GamePath>();
 
 NavePlayer Personagem;
 TileMapJSON MAPA;
@@ -81,8 +82,6 @@ public BufferStrategy strategy = null;
 float PosWorldX;
 float PosWorldY;
 float desloc;
-
-
 
 public GamePanel()
 {
@@ -124,11 +123,16 @@ public GamePanel()
 	ALEFT = false;	
 	ARIGHT = false;
 	
-	Inimigos = new BufferedImage[3];	
+	Inimigos = new BufferedImage[8];	
 
-	    Inimigos[0] = carregaImagem("inimigo01_100x100.png");
-	    Inimigos[1] = carregaImagem("inimigo02_100x100.png");
-	    Inimigos[2] = carregaImagem("inimigo03_100x100.png");  
+	    Inimigos[0] = carregaImagem("/inimigos/inimigo1.png");
+	    Inimigos[1] = carregaImagem("/inimigos/inimigo2.png");
+	    Inimigos[2] = carregaImagem("/inimigos/inimigo3.png"); 
+	    Inimigos[3] = carregaImagem("/inimigos/inimigo4.png");
+	    Inimigos[4] = carregaImagem("/inimigos/inimigo5.png");  
+	    Inimigos[5] = carregaImagem("/inimigos/inimigo6.png");  
+	    Inimigos[6] = carregaImagem("/inimigos/inimigo7.png");  
+	    Inimigos[7] = carregaImagem("/inimigos/inimigo8.png"); 
 	
 	
 	Tiros = new BufferedImage[3];	
@@ -138,23 +142,27 @@ public GamePanel()
 	    Tiros[2] = carregaImagem("ataque03.png");
 	    	
 	
-	Explosoes = new BufferedImage[4];	
+	Explosoes = new BufferedImage[4]; 
+	ExplosoesSize = new int[4];
 
 	    Explosoes[0] = carregaImagem("explosao20x20.png");
-	    Explosoes[1] = carregaImagem("explosao100x100.png");
-	    Explosoes[2] = carregaImagem("explosao200x200.png");
+	    Explosoes[1] = carregaImagem("/explosoes/Explosoes.png");
+	    Explosoes[2] = carregaImagem("/explosoes/Explosoes.png");
 	    Explosoes[3] = carregaImagem("explosao20x20B.png");	    
 	
-	
+	    ExplosoesSize[0] = Explosoes[0].getHeight();
+	    ExplosoesSize[1] = Explosoes[1].getHeight();
+	    ExplosoesSize[2] = Explosoes[2].getHeight();
+	    ExplosoesSize[3] = Explosoes[3].getHeight();
 
-	    Nave = carregaImagem("nave100x100.png");
+	    Nave = carregaImagem("/naves/nave1.png");
 	    Fundo = carregaImagem("fundo.jpg");
 		
 
 	    BufferedImage tmp = carregaImagem("spaceship.png");
 	    BufferedImage tileset = new BufferedImage(tmp.getWidth(null), tmp.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 	    tileset.getGraphics().drawImage(tmp, 0, 0, null);
-	    MAPA = new TileMapJSON(tileset, 20, 20);
+	    MAPA = new TileMapJSON(tileset, 20, 19);
 	    MAPA.AbreMapa("mapaNave.json");
 
 	
@@ -179,15 +187,25 @@ public GamePanel()
 	SomTiro = new Som("Attack2.wav");
 	SomExplosao = new Som("Explosion5.wav");
 	
-//	if (dbImage == null){ // create the buffer
-//		dbImage = new BufferedImage(PWIDTH, PHEIGHT,BufferedImage.TYPE_INT_ARGB);
-//		if (dbImage == null) {
-//			System.out.println("dbImage is null");
-//			return;
-//		}else{
-//			dbg = (Graphics2D)dbImage.getGraphics();
-//		}
-//	}
+	GamePath path1 = new GamePath(false);
+	GamePath path2 = new GamePath(false);
+	GamePath path3 = new GamePath(true);
+	
+	path1.addPoint(0,0);
+	path1.addPoint(100, 100);
+	path1.addPoint(0, 200);
+	
+	path2.addPoint(0,0);
+	path2.addPoint(-100, 100);
+	path2.addPoint(-200, 200);
+	
+	path3.addPoint(0,0);
+	path3.addPoint(300, 300);
+	path3.addPoint(0, 300);
+	
+	listaDePaths.add(path1);
+	listaDePaths.add(path2);
+	listaDePaths.add(path3);
 	
 } // end of GamePanel()
 
@@ -338,22 +356,24 @@ private void gameUpdate(long DiffTime)
 	PosWorldY += -((20*DiffTime)/1000.0f);
 	desloc += ((20*DiffTime)/1000.0f);
 	
-	int mapy = ((MAPA.Altura*MAPA.tileH)-20*MAPA.tileH)+((int)(PosWorldY));
+	int mapy = ((MAPA.Altura*MAPA.tileH)-19*MAPA.tileH)+((int)(PosWorldY));
 	MAPA.Posiciona(0, mapy);
 	
 	
 	if(desloc >= 96){
-		int postile = (MAPA.MapY/32)-2;
-		if(postile>4){
+		int postile = (MAPA.MapY/32)-1;
+		if(postile>3){
 			for(int py = postile; py > (postile - 3);py--){
 				for(int px = 0; px < 20;px++){
 					int t = MAPA.mapa2[py][px];
 					//System.out.println(" "+px+" "+py+" "+t);
 					if(t >0){
-					    int inimigoescolhido = rnd.nextInt(3);
-					    Sprite UmInimigo = new Sprite(Inimigos[inimigoescolhido],px*32-50,py*32-50,0,false,Inimigos[inimigoescolhido].getWidth(null),Inimigos[inimigoescolhido].getHeight(null),1,1);
+					    int inimigoescolhido = t-MAPA.mapa2min;
+					    Inimigo UmInimigo = new Inimigo(Inimigos[inimigoescolhido],px*32-50,py*32-50,0,false,Inimigos[inimigoescolhido].getWidth(null),Inimigos[inimigoescolhido].getHeight(null),1,1);
 					    UmInimigo.VelX = 0;//-50 + rnd.nextInt(100);
-					    UmInimigo.VelY = 100;//50+rnd.nextInt(50*Difficult);
+					    UmInimigo.VelY = 0;//50+rnd.nextInt(50*Difficult);
+					    UmInimigo.vel = 200;
+					    UmInimigo.path = listaDePaths.get(rnd.nextInt(3));
 					    UmInimigo.Anim = rnd.nextInt(4);
 					    UmInimigo.Life = 20 + rnd.nextInt(20*Difficult);
 					    
@@ -377,7 +397,7 @@ private void gameUpdate(long DiffTime)
 	    }else{
 	        ((Sprite)ListaTiros.get(i)).SimulaSe(DiffTime);
 	        if(((Sprite)ListaTiros.get(i)).Tipo == 5){
-				Sprite explosao = new Sprite(Explosoes[3],(int)((Sprite)ListaTiros.get(i)).X,(int)((Sprite)ListaTiros.get(i)).Y+40,0,true,20,20,8,1); 
+				Sprite explosao = new Sprite(Explosoes[3],(int)((Sprite)ListaTiros.get(i)).X,(int)((Sprite)ListaTiros.get(i)).Y+40,0,true,ExplosoesSize[3],ExplosoesSize[3],8,1); 
 				explosao.VelX = 0;
 				explosao.VelY = 0;
 				explosao.FrameTime = 80;
@@ -421,9 +441,9 @@ private void gameUpdate(long DiffTime)
 		    if(((xtiro+otiro.Largura)>xenemy)&&(xtiro<(xenemy+enemy.Largura))&&((ytiro+otiro.Altura)>yenemy)&&((ytiro)<(yenemy+enemy.Altura))){
 		        ListaTiros.remove(i);
 		        i--;
-				Sprite explosao = new Sprite(Explosoes[0],xtiro,ytiro,0,true,20,20,4,1); 
+				Sprite explosao = new Sprite(Explosoes[0],xtiro,ytiro,0,true,ExplosoesSize[0],ExplosoesSize[0],4,1); 
 				explosao.VelX = 0;
-				explosao.VelY = -100;
+				explosao.VelY = 0;
 				explosao.FrameTime = 50;
 				ListaExplosoes.add(explosao);	
 				
@@ -431,7 +451,7 @@ private void gameUpdate(long DiffTime)
 				
 				if(enemy.Life <= 0){
 				    ListaObjetos.remove(j);
-					Sprite explosao2 = new Sprite(Explosoes[1],xenemy,yenemy,0,true,100,100,4,1); 
+					Sprite explosao2 = new Sprite(Explosoes[1],xenemy,yenemy,0,true,ExplosoesSize[1],ExplosoesSize[1],4,1); 
 					explosao2.VelX = 0;
 					explosao2.VelY = 0;
 					explosao2.FrameTime = 100;

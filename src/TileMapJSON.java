@@ -31,6 +31,8 @@ public class TileMapJSON {
 
 	int[][] mapa;
 	int[][] mapa2;
+	
+	int mapa2min = 999999;
 
 	public TileMapJSON(Image tileset, int tilestelaX, int tilestelaY) {
 		NTileX = tilestelaX;
@@ -91,7 +93,7 @@ public class TileMapJSON {
 				//System.out.println("index "+index);
 				mapa[j][i] = layar1.getInt(index)-1;
 				if(mapa[j][i]<0){
-					mapa[j][i] = 0;
+					mapa[j][i] = -1;
 				}
 			}
 		}
@@ -101,8 +103,12 @@ public class TileMapJSON {
 				int index = j*Largura+i;
 				mapa2[j][i] = layar2.getInt(index)-1;
 				if(mapa2[j][i]<0){
-					mapa2[j][i] = 0;
-				}	
+					mapa2[j][i] = -1;
+				}
+				if(mapa2[j][i]>=0&&mapa2min>mapa2[j][i]){
+					mapa2min = mapa2[j][i];
+				}
+				
 			}
 		}
 	}
@@ -126,7 +132,7 @@ public class TileMapJSON {
 			for (int i = 0; i < NTileX + somax; i++) {
 				int tile = mapa[j + (MapY /tileH)][i + (MapX /tileH)];
 				
-				if(tile!=0){
+				if(tile>=0){
 					int tilex = (tile % TilePLinhaTileset) * tileW;
 					int tiley = (tile / TilePLinhaTileset) * tileH;
 					int id = i *  tileW;
@@ -149,7 +155,7 @@ public class TileMapJSON {
 
 	public void Posiciona(int x, int y) {	
 		
-		System.out.println(" "+tileH+" "+y);
+		//System.out.println(" "+tileH+" "+y);
 		
 		int X = x / tileW;
 		int Y = y / tileH;
